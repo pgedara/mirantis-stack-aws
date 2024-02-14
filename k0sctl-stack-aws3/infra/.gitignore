@@ -2,4 +2,7 @@
 # Git repository, or add it to an existing repo.
 
 # our module puts a private ssh key into this folder.
-.ssh
+*.key
+
+# Terraform stuff
+terraform.tfstate*

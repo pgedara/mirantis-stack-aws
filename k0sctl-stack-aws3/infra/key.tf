@@ -11,7 +11,7 @@ module "key" {
 
 resource "local_sensitive_file" "ssh_private_key" {
   content              = module.key.private_key
-  filename             = ".ssh/ed25519.key"
+  filename             = "ed25519.key"
   file_permission      = "0600"
   directory_permission = "0644"
 }
