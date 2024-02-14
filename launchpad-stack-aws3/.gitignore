@@ -1,0 +1,13 @@
+# terraform plugin cache
+**/.terraform
+# terraform lock
+**/.terrafowm.lock.hcl
+**/.terraform.tfstate.lock.info
+# terraform state files, which don't belong in git.
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/terraform.tfstate.*.backup
+
+my_tf.cfg
+
+launchpad.yaml

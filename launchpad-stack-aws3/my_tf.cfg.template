@@ -1,0 +1,14 @@
+provider_installation {
+	# This disables the version and checksum verifications for this provider
+	# and forces Terraform to look for the launchpad provider plugin in the
+	# given directory.
+	dev_overrides {
+		# if you check out the k0sctl tf provider, and run `make local`, then the following path should exist
+		#"mirantis/launchpad" = "path/to/my/terraform-provider-launchpad/dist/terraform-provider-launchpad_linux_amd64_v1"
+	}
+
+	# For all other providers, install them directly from their origin provider
+	# registries as normal. If you omit this, Terraform will _only_ use
+	# the dev_overrides block, and so no other providers will be available.
+	direct {}
+}

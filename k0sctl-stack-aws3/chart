@@ -1,0 +1,61 @@
+#!bash
+#
+# Run terraform in the infra of app/X folder
+#
+
+CONFIG_PATH="./config"
+
+USE_CONFIG=1
+
+while [ $# -gt 0 ]
+do
+  case "$1" in
+    "--debug")
+	export TF_LOG="debug"
+      ;;
+    "--info")
+	export TF_LOG="info"
+      ;;
+    *)
+      break;
+  esac
+  shift
+done
+
+target="${1:-infra}"
+target_key="${target////_}" # easier string key without back slash
+shift
+
+TF_USE_TFVARS=0
+
+command="${1:apply}"
+shift
+
+case $command in
+	"fmt")
+	  ;; 
+	"state")
+	  ;;
+	"init")
+	  ;;
+	"output")
+	  ;;
+	*)
+		USE_CONFIG=1
+		TF_USE_TFVARS=1
+	  ;;
+esac
+
+if [ $USE_CONFIG -eq 1 -a -f "${TF_CLI_CONFIG_FILE}" ]; then
+	export TF_CLI_CONFIG_FILE=$(realpath "my_tf.cfg")
+fi
+
+global_args="-chdir=$target"
+command_args=""
+
+TF_VARS_FILE=$(realpath "${CONFIG_PATH}/${target_key}.tfvars")
+if [ $TF_USE_TFVARS -eq 1 -a -f "${TF_VARS_FILE}" ]; then
+	export command_args="${command_args} -var-file=${TF_VARS_FILE}"
+fi
+
+$(which terraform) ${global_args} ${command} ${command_args} $@
