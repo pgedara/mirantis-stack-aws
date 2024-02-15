@@ -49,6 +49,6 @@ variable "extra_tags" {
 
 variable "windows_password" {
   description = "Password to use with windows & winrm"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }

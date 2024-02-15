@@ -37,34 +37,41 @@ locals {
   }
 
   // standard firewall rules [here we just leave it open until we can figure this out]
-  k0s_firewall_rules_ingress_ipv4 = [
-    {
-      description : "Permissive internal traffic [BAD RULE]"
-      from_port : 0
-      to_port : 0
-      protocol : "-1"
-      self : true
-      cidr_blocks : []
-    },
-    {
-      description : "Permissive external traffic [BAD RULE]"
-      from_port : 0
-      to_port : 0
-      protocol : "-1"
-      self : false
-      cidr_blocks : ["0.0.0.0/0"]
-    },
-  ]
-  k0s_firewall_rules_egress_ipv4 = [
-    {
-      description : "Permissive outgoing traffic"
-      from_port : 0
-      to_port : 0
-      protocol : "-1"
-      cidr_blocks : ["0.0.0.0/0"]
-      self : false
+  k0s_securitygroups = {
+    "permissive" = {
+      description = "Common permissive SG for all cluster machines"
+      nodegroups  = [for n, ng in var.nodegroups : n]
+
+      ingress_ipv4 = [
+        {
+          description : "Permissive internal traffic [BAD RULE]"
+          from_port : 0
+          to_port : 0
+          protocol : "-1"
+          self : true
+          cidr_blocks : []
+        },
+        {
+          description : "Permissive external traffic [BAD RULE]"
+          from_port : 0
+          to_port : 0
+          protocol : "-1"
+          self : false
+          cidr_blocks : ["0.0.0.0/0"]
+        },
+      ]
+      egress_ipv4 = [
+        {
+          description : "Permissive outgoing traffic"
+          from_port : 0
+          to_port : 0
+          protocol : "-1"
+          cidr_blocks : ["0.0.0.0/0"]
+          self : false
+        }
+      ]
     }
-  ]
+  }
 
   // This should likely be built using a template
   k0s_config = <<EOT
@@ -96,7 +103,7 @@ EOT
   KUBE_URL = module.provision.ingresses["kube"].lb_dns
 
   // flatten nodegroups into a set of objects with the info needed for each node, by combining the group details with the node detains
-  hosts_ssh = tolist(concat([ for k, ng in local.nodegroups : [ for l, ngn in ng.nodes :  {
+  hosts_ssh = tolist(concat([for k, ng in local.nodegroups : [for l, ngn in ng.nodes : {
     label : ngn.label
     role : ng.role
 
@@ -106,12 +113,12 @@ EOT
     ssh_user : ng.ssh_user
     ssh_port : ng.ssh_port
     ssh_key_path : abspath(local_sensitive_file.ssh_private_key.filename)
-  } if ng.connection == "ssh" ]] ...))
+  } if ng.connection == "ssh"]]...))
 
 }
 
 output "hosts_ssh" {
-  value = local.hosts_ssh
+  value     = local.hosts_ssh
   sensitive = true
 }
 

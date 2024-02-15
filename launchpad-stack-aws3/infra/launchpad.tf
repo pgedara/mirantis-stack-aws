@@ -44,34 +44,41 @@ locals {
   }
 
   // standard MCR/MKE/MSR firewall rules [here we just leave it open until we can figure this out]
-  launchpad_firewall_rules_ingress_ipv4 = [
-    {
-      description : "Permissive internal traffic [BAD RULE]"
-      from_port : 0
-      to_port : 0
-      protocol : "-1"
-      self : true
-      cidr_blocks : []
-    },
-    {
-      description : "Permissive external traffic [BAD RULE]"
-      from_port : 0
-      to_port : 0
-      protocol : "-1"
-      self : false
-      cidr_blocks : ["0.0.0.0/0"]
-    },
-  ]
-  launchpad_firewall_rules_egress_ipv4 = [
-    {
-      description : "Permissive outgoing traffic"
-      from_port : 0
-      to_port : 0
-      protocol : "-1"
-      cidr_blocks : ["0.0.0.0/0"]
-      self : false
+  launchpad_securitygroups = {
+    "permissive" = {
+      description = "Common SG for all cluster machines"
+      nodegroups  = [for n, ng in var.nodegroups : n]
+      ingress_ipv4 = [
+        {
+          description : "Permissive internal traffic [BAD RULE]"
+          from_port : 0
+          to_port : 0
+          protocol : "-1"
+          self : true
+          cidr_blocks : []
+        },
+        {
+          description : "Permissive external traffic [BAD RULE]"
+          from_port : 0
+          to_port : 0
+          protocol : "-1"
+          self : false
+          cidr_blocks : ["0.0.0.0/0"]
+        }
+      ]
+      egress_ipv4 = [
+        {
+          description : "Permissive outgoing traffic"
+          from_port : 0
+          to_port : 0
+          protocol : "-1"
+          cidr_blocks : ["0.0.0.0/0"]
+          self : false
+        }
+      ]
     }
-  ]
+  }
+
 }
 
 // prepare values to make it easier to feed into launchpad
