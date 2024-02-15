@@ -30,22 +30,11 @@ module "provision" {
     user_data : ngd.user_data
   } }
 
-  // pass in ingroup information (could jsut consume var.ingresses, but this makes it clearer)
-  ingresses = { for k, i in local.k0s_ingresses : k => {
-    description = i.description
-    nodegroups  = i.nodegroups,
-    routes      = i.routes
-  } }
+  // ingress/lb (should likely merge with an input to allow more flexibility
+  ingresses = local.k0s_ingresses # see k0sctl.tf
 
-  // Use the firewall rules which mix the defaults with the additional rules from var.)
-  securitygroups = {
-    "k0s" = {
-      description  = "Common SG for all cluster machines"
-      nodegroups   = [for n, ng in var.nodegroups : n]
-      ingress_ipv4 = local.k0s_firewall_rules_ingress_ipv4,
-      egress_ipv4  = local.k0s_firewall_rules_egress_ipv4
-    }
-  }
+  // firewall rules (should likely merge with an input to allow more flexibility
+  securitygroups = local.k0s_securitygroups # see k0sctl.tf
 }
 
 // locals calculated after the provision module is run, but before installation using launchpad

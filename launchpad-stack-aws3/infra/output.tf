@@ -1,8 +1,8 @@
 
 output "nodes" {
   description = "Nodegroups with node lists"
-  value = local.nodegroups
-  sensitive = true
+  value       = local.nodegroups
+  sensitive   = true
 }
 
 output "ingresses" {
@@ -12,6 +12,6 @@ output "ingresses" {
 
 output "platforms" {
   description = "Platforms used in the stack"
-  value = local.platforms_with_ami
-  sensitive = true
+  value       = local.platforms_with_ami
+  sensitive   = true
 }
