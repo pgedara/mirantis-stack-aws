@@ -1,3 +1,10 @@
+// constants
+locals {
+
+  // only hosts with these roles will be used for k0s
+  k0s_roles = ["controller", "worker"]
+
+}
 
 variable "k0sctl" {
   description = "K0sctl install configuration"
@@ -113,7 +120,7 @@ EOT
     ssh_user : ng.ssh_user
     ssh_port : ng.ssh_port
     ssh_key_path : abspath(local_sensitive_file.ssh_private_key.filename)
-  } if ng.connection == "ssh"]]...))
+  } if contains(local.k0s_roles, ng.role) && ng.connection == "ssh"]]...))
 
 }
 

@@ -1,3 +1,12 @@
+// constants
+locals {
+
+  // role for MSR machines, so that we can detect if msr config is needed
+  launchpad_role_msr = "msr"
+  // only hosts with these roles will be used for launchpad_yaml
+  launchpad_roles = ["manager", "worker", local.launchpad_role_msr]
+
+}
 
 // Launchpad configuration
 variable "launchpad" {
@@ -97,7 +106,7 @@ locals {
     ssh_user : ng.ssh_user
     ssh_port : ng.ssh_port
     ssh_key_path : abspath(local_sensitive_file.ssh_private_key.filename)
-  } if ng.connection == "ssh" }]...)
+  } if contains(local.launchpad_roles, ng.role) && ng.connection == "ssh" }]...)
   launchpad_hosts_winrm = merge([for k, ng in local.nodegroups : { for l, ngn in ng.nodes : ngn.label => {
     label : ngn.label
     role : ng.role
@@ -109,10 +118,10 @@ locals {
     winrm_password : var.windows_password
     winrm_useHTTPS : ng.winrm_useHTTPS
     winrm_insecure : ng.winrm_insecure
-  } if ng.connection == "winrm" }]...)
+  } if contains(local.launchpad_roles, ng.role) && ng.connection == "winrm" }]...)
 
-  // decide if we need msr configuration
-  has_msr = sum(concat([0], [for k, ng in local.nodegroups : ng.count if ng.role == "msr"])) > 0
+  // decide if we need msr configuration (the [0] is needed to prevent an error of no msr instances exit)
+  has_msr = sum(concat([0], [for k, ng in local.nodegroups : ng.count if ng.role == local.launchpad_role_msr])) > 0
 }
 
 // ------- Ye old launchpad yaml (just for debugging)

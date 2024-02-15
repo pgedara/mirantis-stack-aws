@@ -12,7 +12,6 @@ module "platform" {
   source = "../../provision/modules/platform"
 
   platform_key     = local.unique_used_platforms[count.index]
-  windows_password = var.windows_password
 }
 
 // variables calculated after ami data is pulled

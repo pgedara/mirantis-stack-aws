@@ -46,9 +46,3 @@ variable "extra_tags" {
   type        = map(string)
   default     = {}
 }
-
-variable "windows_password" {
-  description = "Password to use with windows & winrm"
-  type        = string
-  default     = ""
-}

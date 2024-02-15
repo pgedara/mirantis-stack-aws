@@ -34,7 +34,7 @@ module "provision" {
   ingresses = local.launchpad_ingresses # see launchpad.tf
 
   // firewall rules (should likely merge with an input to allow more flexibility
-  securitygroups = launchpad_securitygroups # see launchpad.tf
+  securitygroups = local.launchpad_securitygroups # see launchpad.tf
 }
 
 // locals calculated after the provision module is run, but before installation using launchpad
