@@ -194,6 +194,6 @@ output "mke_connect" {
     host     = local.MKE_URL
     username = var.launchpad.mke_connect.username
     password = var.launchpad.mke_connect.password
-    nsecure  = var.launchpad.mke_connect.insecure
+    insecure = var.launchpad.mke_connect.insecure
   }
 }
