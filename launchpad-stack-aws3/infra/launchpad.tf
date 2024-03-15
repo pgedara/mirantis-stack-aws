@@ -36,7 +36,7 @@ locals {
     "mke" = {
       description = "MKE ingress for UI and Kube"
       nodegroups  = [for k, ng in var.nodegroups : k if ng.role == "manager"]
-
+      tags        = local.tags
       routes = {
         "mke" = {
           port_incoming = 443
@@ -57,6 +57,7 @@ locals {
     "manager" = {
       description = "Common security group for manager nodes"
       nodegroups  = [for n, ng in var.nodegroups : n if ng.role == "manager"]
+      tags        = local.tags
       ingress_ipv4 = [
         {
           description : "Allow https traffic from anywhere"
@@ -129,8 +130,9 @@ resource "launchpad_config" "cluster" {
     mke {
       version        = var.launchpad.mke_version
       admin_password = var.launchpad.mke_connect.password
-      install_flags  = [
-	"--san=${local.MKE_URL}"
+      install_flags = [
+        "--san=${local.MKE_URL}",
+        "--cloud-provider=external"
       ]
     }
 

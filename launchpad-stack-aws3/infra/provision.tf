@@ -6,16 +6,27 @@ locals {
 
 # PROVISION MACHINES/NETWORK
 module "provision" {
-  source = "terraform-mirantis-modules/provision-aws/mirantis"
+  #source = "terraform-mirantis-modules/provision-aws/mirantis"
+  source = "../../../terraform-mirantis-provision-aws"
 
   name = var.name
-  tags = local.tags
+  # tags      = local.tags
+  # kube_tags = local.kube_tags
 
-  cidr                 = var.network.cidr
-  public_subnet_count  = 1
-  private_subnet_count = 0
-  enable_vpn_gateway   = false
-  enable_nat_gateway   = false
+  # cidr                 = var.network.cidr
+  # public_subnet_count  = 1
+  # private_subnet_count = 0
+  # enable_vpn_gateway   = false
+  # enable_nat_gateway   = false
+
+  network = {
+    cidr                 = var.network.cidr
+    public_subnet_count  = 1
+    private_subnet_count = 0
+    enable_vpn_gateway   = false
+    enable_nat_gateway   = false
+    tags                 = local.tags
+  }
 
   // pass in a mix of nodegroups with the platform information
   nodegroups = { for k, ngd in local.nodegroups_wplatform : k => {
@@ -28,6 +39,8 @@ module "provision" {
     role : ngd.role
     public : ngd.public
     user_data : ngd.user_data
+    instance_profile_name : aws_iam_instance_profile.common_profile.name
+    tags : local.tags
   } }
 
   // ingress/lb (should likely merge with an input to allow more flexibility

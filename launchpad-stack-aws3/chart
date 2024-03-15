@@ -1,4 +1,4 @@
-#!bash
+#!/bin/bash
 #
 # Run terraform in the infra of app/X folder
 #

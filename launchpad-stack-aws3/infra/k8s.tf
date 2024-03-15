@@ -17,16 +17,6 @@ provider "helm" {
   }
 }
 
-resource "kubernetes_namespace" "test" {
-  metadata {
-    name = "test"
-  }
-
-  depends_on = [
-    mke_clientbundle.admin
-  ]
-}
-
 output "kubeconfig" {
   description = "the contents of the kubeconfig yaml file"
   value       = mke_clientbundle.admin.kube_yaml
